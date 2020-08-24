@@ -1,0 +1,18 @@
+application:
+  message:
+    operation:
+      success-code: 0
+      success-text: عملیات با موفقیت انجام شد
+      #-------------------------------------#
+      not-found-code: 7000
+      not-found-text: داده ای با این مشخصات یافت نشد
+      #-------------------------------------#
+      validation-error-code: 7001
+      validation-error-text: مقدار %s صحیح نیست
+      #-------------------------------------#
+      missing-parameter-code: 7002
+      missing-parameter-text: مقدار %s را وارد کنید
+      #-------------------------------------#
+      unknown-error-code: 7003
+      unknown-error-text: خطای ناشناخته رخ داده است
+      #-------------------------------------#

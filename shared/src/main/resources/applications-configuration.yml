@@ -1,0 +1,4 @@
+applications:
+  data:
+    pageable:
+      page-size: 10
