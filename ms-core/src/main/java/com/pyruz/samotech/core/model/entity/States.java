@@ -1,6 +1,5 @@
 package com.pyruz.samotech.core.model.entity;
 
-import com.pyruz.samotech.shared.model.entity.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

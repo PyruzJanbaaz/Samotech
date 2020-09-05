@@ -1,10 +1,6 @@
 package com.pyruz.samotech.uaa.model.entity;
 
-import com.pyruz.samotech.shared.model.entity.BaseEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.Column;
@@ -20,6 +16,7 @@ import javax.validation.constraints.Size;
 @Where(clause = "is_deleted = false")
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper=false)
 public class Company extends BaseEntity<Integer> {
 
     @Column(name = "company_code", length = 50, nullable = false)

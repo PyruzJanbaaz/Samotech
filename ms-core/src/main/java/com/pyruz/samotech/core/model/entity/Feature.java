@@ -1,6 +1,5 @@
 package com.pyruz.samotech.core.model.entity;
 
-import com.pyruz.samotech.shared.model.entity.BaseEntity;
 import lombok.*;
 import org.hibernate.annotations.Where;
 
@@ -16,7 +15,7 @@ import java.util.List;
 @Where(clause = "is_deleted = false")
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class Feature extends BaseEntity<Integer> {
 
     @NotNull

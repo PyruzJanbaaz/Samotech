@@ -1,5 +1,6 @@
 package com.pyruz.samotech.core.service.collections;
 
+import com.pyruz.samotech.core.model.entity.Collections;
 import com.pyruz.samotech.core.repository.CollectionsRepository;
 import com.pyruz.samotech.shared.handler.exception.ServiceException;
 import com.pyruz.samotech.shared.model.domain.collection.NewCollection;
@@ -7,14 +8,12 @@ import com.pyruz.samotech.shared.model.domain.collection.UpdateCollection;
 import com.pyruz.samotech.shared.model.dto.base.BaseDTO;
 import com.pyruz.samotech.shared.model.dto.base.MetaDTO;
 import com.pyruz.samotech.shared.model.dto.base.PagerDTO;
-import com.pyruz.samotech.shared.model.entity.Collections;
 import com.pyruz.samotech.shared.utility.ApplicationProperties;
 import com.pyruz.samotech.shared.utility.ApplicationUtilities;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import java.util.UUID;
 
 @Service

@@ -6,7 +6,6 @@ import com.pyruz.samotech.shared.model.dto.base.MetaDTO;
 import com.pyruz.samotech.shared.utility.ApplicationProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -29,8 +28,11 @@ public class ServiceExceptionHandler {
 
     static final Logger logger = LoggerFactory.getLogger("samotech");
 
-    @Autowired
-    private ApplicationProperties applicationProperties;
+    final ApplicationProperties applicationProperties;
+
+    public ServiceExceptionHandler(ApplicationProperties applicationProperties) {
+        this.applicationProperties = applicationProperties;
+    }
 
     // --> ServiceLevelValidation
     @ExceptionHandler(MethodArgumentNotValidException.class)

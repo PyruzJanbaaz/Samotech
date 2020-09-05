@@ -1,8 +1,5 @@
 package com.pyruz.samotech.core.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.pyruz.samotech.shared.model.entity.BaseEntity;
-import com.pyruz.samotech.shared.model.entity.Collections;
 import lombok.*;
 import org.hibernate.annotations.Where;
 
@@ -19,7 +16,7 @@ import java.io.Serializable;
 @Where(clause = "is_deleted = false")
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class Project extends BaseEntity<Integer> implements Serializable {
 
     @NotNull

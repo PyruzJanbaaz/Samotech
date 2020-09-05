@@ -1,7 +1,5 @@
 package com.pyruz.samotech.uaa.model.entity;
 
-import com.pyruz.samotech.shared.model.entity.BaseEntity;
-import com.pyruz.samotech.shared.model.entity.Collections;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

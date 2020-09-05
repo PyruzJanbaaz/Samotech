@@ -1,5 +1,6 @@
 package com.pyruz.samotech.core.service.project;
 
+import com.pyruz.samotech.core.model.entity.Collections;
 import com.pyruz.samotech.core.model.entity.Project;
 import com.pyruz.samotech.core.repository.CollectionsRepository;
 import com.pyruz.samotech.core.repository.ProjectRepository;
@@ -9,7 +10,6 @@ import com.pyruz.samotech.shared.model.domain.project.UpdateProject;
 import com.pyruz.samotech.shared.model.dto.base.BaseDTO;
 import com.pyruz.samotech.shared.model.dto.base.MetaDTO;
 import com.pyruz.samotech.shared.model.dto.base.PagerDTO;
-import com.pyruz.samotech.shared.model.entity.Collections;
 import com.pyruz.samotech.shared.utility.ApplicationProperties;
 import com.pyruz.samotech.shared.utility.ApplicationUtilities;
 import org.springframework.data.domain.Page;

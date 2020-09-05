@@ -5,7 +5,6 @@ import com.pyruz.samotech.shared.model.domain.epic.NewEpic;
 import com.pyruz.samotech.shared.model.domain.epic.UpdateEpic;
 import com.pyruz.samotech.shared.model.dto.base.BaseDTO;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -22,33 +21,39 @@ public class EpicController {
 
 
     @PostMapping("/v1/epic")
-    public ResponseEntity<BaseDTO> addEpic(@Valid @RequestBody NewEpic newEpic) {
-        return new ResponseEntity<>(epicService.addEpic(newEpic), HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public BaseDTO addEpic(@Valid @RequestBody NewEpic newEpic) {
+        return epicService.addEpic(newEpic);
     }
 
     @PutMapping("/v1/epic")
-    public ResponseEntity<BaseDTO> editEpic(@Valid @RequestBody UpdateEpic updateEpic) {
-        return new ResponseEntity<>(epicService.editEpic(updateEpic), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public BaseDTO editEpic(@Valid @RequestBody UpdateEpic updateEpic) {
+        return epicService.editEpic(updateEpic);
     }
 
     @GetMapping("/v1/epic/{epicId}")
-    public ResponseEntity<BaseDTO> getEpic(@PathVariable Integer epicId) {
-        return new ResponseEntity<>(epicService.getEpic(epicId), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public BaseDTO getEpic(@PathVariable Integer epicId) {
+        return epicService.getEpic(epicId);
     }
 
     @GetMapping("/v1/epics")
-    public ResponseEntity<BaseDTO> getAllEpics() {
-        return new ResponseEntity<>(epicService.getAllEpics(), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public BaseDTO getAllEpics() {
+        return epicService.getAllEpics();
     }
 
     @GetMapping("/v1/epics/{page}")
-    public ResponseEntity<BaseDTO> getEpics(@PathVariable Integer page) {
-        return new ResponseEntity<>(epicService.getEpics(page), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public BaseDTO getEpics(@PathVariable Integer page) {
+        return epicService.getEpics(page);
     }
 
     @DeleteMapping("/v1/epic")
-    public ResponseEntity<BaseDTO> deleteEpic(@RequestParam Integer epicId) {
-        return new ResponseEntity<>(epicService.deleteEpic(epicId), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public BaseDTO deleteEpic(@RequestParam Integer epicId) {
+        return epicService.deleteEpic(epicId);
     }
 
 }

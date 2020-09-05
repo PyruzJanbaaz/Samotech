@@ -5,14 +5,13 @@ import com.pyruz.samotech.shared.model.domain.collection.NewCollection;
 import com.pyruz.samotech.shared.model.domain.collection.UpdateCollection;
 import com.pyruz.samotech.shared.model.dto.base.BaseDTO;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
-public class CollectionsController  {
+public class CollectionsController {
 
     final CollectionsService collectionService;
 
@@ -21,34 +20,39 @@ public class CollectionsController  {
     }
 
     @PostMapping("/v1/collection")
-
-    public ResponseEntity<BaseDTO> addCollection(@Valid @RequestBody NewCollection newCollection) {
-        return new ResponseEntity<>(collectionService.addCollection(newCollection), HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public BaseDTO addCollection(@Valid @RequestBody NewCollection newCollection) {
+        return collectionService.addCollection(newCollection);
     }
 
     @PutMapping("/v1/collection")
-    public ResponseEntity<BaseDTO> editCollection(@Valid @RequestBody UpdateCollection updateCollection) {
-        return new ResponseEntity<>(collectionService.editCollection(updateCollection), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public BaseDTO editCollection(@Valid @RequestBody UpdateCollection updateCollection) {
+        return collectionService.editCollection(updateCollection);
     }
 
     @GetMapping("/v1/collection/{collectionId}")
-    public ResponseEntity<BaseDTO> getCollection(@PathVariable Integer collectionId) {
-        return new ResponseEntity<>(collectionService.getCollection(collectionId), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public BaseDTO getCollection(@PathVariable Integer collectionId) {
+        return collectionService.getCollection(collectionId);
     }
 
     @GetMapping("/v1/collections")
-    public ResponseEntity<BaseDTO> getAllCollections() {
-        return new ResponseEntity<>(collectionService.getAllCollections(), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public BaseDTO getAllCollections() {
+        return collectionService.getAllCollections();
     }
 
     @GetMapping("/v1/collections/{page}")
-    public ResponseEntity<BaseDTO> getCollections(@PathVariable Integer page) {
-        return new ResponseEntity<>(collectionService.getCollections(page), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public BaseDTO getCollections(@PathVariable Integer page) {
+        return collectionService.getCollections(page);
     }
 
     @DeleteMapping("/v1/collection")
-    public ResponseEntity<BaseDTO> deleteCollection(@RequestParam Integer collectionId) {
-        return new ResponseEntity<>(collectionService.deleteCollection(collectionId), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public BaseDTO deleteCollection(@RequestParam Integer collectionId) {
+        return collectionService.deleteCollection(collectionId);
     }
 
 }

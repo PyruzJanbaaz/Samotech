@@ -1,6 +1,5 @@
 package com.pyruz.samotech.core.model.entity;
 
-import com.pyruz.samotech.shared.model.entity.BaseEntity;
 import lombok.*;
 import org.hibernate.annotations.Where;
 
@@ -15,7 +14,7 @@ import javax.validation.constraints.Size;
 @Where(clause = "is_deleted = false")
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper=false)
+@EqualsAndHashCode(callSuper = false)
 public class Task extends BaseEntity<Integer> {
 
     @NotNull

@@ -2,11 +2,16 @@ package com.pyruz.samotech.shared.model.dto.base;
 
 
 import com.pyruz.samotech.shared.utility.ApplicationProperties;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class MetaDTO {
-
     private Integer code;
     private String message;
 
@@ -17,12 +22,5 @@ public class MetaDTO {
         );
     }
 
-    public MetaDTO(Integer code, String message) {
-        this.code = code;
-        this.message = message;
-    }
-
-    public MetaDTO() {
-    }
 
 }

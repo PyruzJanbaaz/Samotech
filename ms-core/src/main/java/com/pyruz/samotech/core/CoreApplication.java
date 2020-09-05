@@ -7,7 +7,6 @@ import org.springframework.context.annotation.ComponentScan;
 
 
 @SpringBootApplication
-@EntityScan("com/pyruz.samotech/shared/model/entity")
 @ComponentScan(basePackages = {"com.pyruz.samotech.shared", "com.pyruz.samotech.core"})
 public class CoreApplication {
     public static void main(String[] args) {

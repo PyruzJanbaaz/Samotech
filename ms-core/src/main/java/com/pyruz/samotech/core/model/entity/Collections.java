@@ -1,6 +1,5 @@
-package com.pyruz.samotech.shared.model.entity;
+package com.pyruz.samotech.core.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.hibernate.annotations.Where;
 
@@ -12,7 +11,6 @@ import java.io.Serializable;
 
 @Data
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "collections",
         uniqueConstraints = @UniqueConstraint(columnNames = {"title", "caption"}))
 @Where(clause = "is_deleted = false")
