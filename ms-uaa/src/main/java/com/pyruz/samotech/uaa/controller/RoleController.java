@@ -5,7 +5,6 @@ import com.pyruz.samotech.shared.model.domain.role.UpdateRole;
 import com.pyruz.samotech.shared.model.dto.base.BaseDTO;
 import com.pyruz.samotech.uaa.service.role.RoleService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -21,32 +20,38 @@ public class RoleController {
     }
 
     @PostMapping("/v1/role")
-    public ResponseEntity<BaseDTO> addRole(@Valid @RequestBody NewRole newRole) {
-        return new ResponseEntity<>(roleService.addRole(newRole), HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public BaseDTO addRole(@Valid @RequestBody NewRole newRole) {
+        return roleService.addRole(newRole);
     }
 
     @PutMapping("/v1/role")
-    public ResponseEntity<BaseDTO> editRole(@Valid @RequestBody UpdateRole updateRole) {
-        return new ResponseEntity<>(roleService.editRole(updateRole), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public BaseDTO editRole(@Valid @RequestBody UpdateRole updateRole) {
+        return roleService.editRole(updateRole);
     }
 
     @GetMapping("/v1/role/{roleId}")
-    public ResponseEntity<BaseDTO> getRole(@PathVariable Integer roleId) {
-        return new ResponseEntity<>(roleService.getRole(roleId), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public BaseDTO getRole(@PathVariable Integer roleId) {
+        return roleService.getRole(roleId);
     }
 
     @GetMapping("/v1/roles")
-    public ResponseEntity<BaseDTO> getAllRoles() {
-        return new ResponseEntity<>(roleService.getAllRoles(), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public BaseDTO getAllRoles() {
+        return roleService.getAllRoles();
     }
 
     @GetMapping("/v1/roles/{page}")
-    public ResponseEntity<BaseDTO> getRoles(@PathVariable Integer page) {
-        return new ResponseEntity<>(roleService.getRoles(page), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public BaseDTO getRoles(@PathVariable Integer page) {
+        return roleService.getRoles(page);
     }
 
     @DeleteMapping("/v1/role")
-    public ResponseEntity<BaseDTO> deleteRole(@RequestParam Integer roleId) {
-        return new ResponseEntity<>(roleService.deleteRole(roleId), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public BaseDTO deleteRole(@RequestParam Integer roleId) {
+        return roleService.deleteRole(roleId);
     }
 }

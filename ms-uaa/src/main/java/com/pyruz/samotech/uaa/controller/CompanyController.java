@@ -5,14 +5,13 @@ import com.pyruz.samotech.shared.model.domain.company.UpdateCompany;
 import com.pyruz.samotech.shared.model.dto.base.BaseDTO;
 import com.pyruz.samotech.uaa.service.company.CompanyService;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
-public class CompanyController  {
+public class CompanyController {
 
     final CompanyService companyService;
 
@@ -21,33 +20,39 @@ public class CompanyController  {
     }
 
     @PostMapping("/v1/company")
-    public ResponseEntity<BaseDTO> addCompany(@Valid @RequestBody NewCompany newCompany) {
-        return new ResponseEntity<>(companyService.addCompany(newCompany), HttpStatus.CREATED);
+    @ResponseStatus(HttpStatus.CREATED)
+    public BaseDTO addCompany(@Valid @RequestBody NewCompany newCompany) {
+        return companyService.addCompany(newCompany);
     }
 
     @PutMapping("/v1/company")
-    public ResponseEntity<BaseDTO> editCompany(@Valid @RequestBody UpdateCompany updateCompany) {
-        return new ResponseEntity<>(companyService.editCompany(updateCompany), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public BaseDTO editCompany(@Valid @RequestBody UpdateCompany updateCompany) {
+        return companyService.editCompany(updateCompany);
     }
 
     @GetMapping("/v1/company/{companyId}")
-    public ResponseEntity<BaseDTO> getCompany(@PathVariable Integer companyId) {
-        return new ResponseEntity<>(companyService.getCompany(companyId), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public BaseDTO getCompany(@PathVariable Integer companyId) {
+        return companyService.getCompany(companyId);
     }
 
     @GetMapping("/v1/companies")
-    public ResponseEntity<BaseDTO> getAllCompanies() {
-        return new ResponseEntity<>(companyService.getAllCompanies(), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public BaseDTO getAllCompanies() {
+        return companyService.getAllCompanies();
     }
 
     @GetMapping("/v1/companies/{page}")
-    public ResponseEntity<BaseDTO> getCompanies(@PathVariable Integer page) {
-        return new ResponseEntity<>(companyService.getCompanies(page), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public BaseDTO getCompanies(@PathVariable Integer page) {
+        return companyService.getCompanies(page);
     }
 
     @DeleteMapping("/v1/company")
-    public ResponseEntity<BaseDTO> deleteCompany(@RequestParam Integer companyId) {
-        return new ResponseEntity<>(companyService.deleteCompany(companyId), HttpStatus.OK);
+    @ResponseStatus(HttpStatus.OK)
+    public BaseDTO deleteCompany(@RequestParam Integer companyId) {
+        return companyService.deleteCompany(companyId);
     }
 
 }
