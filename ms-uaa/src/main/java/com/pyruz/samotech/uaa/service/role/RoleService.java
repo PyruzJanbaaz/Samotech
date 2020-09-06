@@ -14,8 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -38,7 +36,9 @@ public class RoleService {
                         .roleCode(UUID.randomUUID().toString())
                         .build()
         );
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
     }
 
     public BaseDTO editRole(UpdateRole updateRole) {
@@ -53,18 +53,25 @@ public class RoleService {
         role.setCaption(updateRole.getCaption());
         role.setIsActive(updateRole.getIsActive());
         roleRepository.save(role);
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
 
     }
 
-    public BaseDTO<Role> getRole(Integer id) {
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), roleRepository.findById(id).orElseThrow(
-                () -> new ServiceException(
-                        applicationProperties.getCode("not-found-code"),
-                        applicationProperties.getProperty("not-found-text"),
-                        HttpStatus.NOT_FOUND
+    public BaseDTO getRole(Integer id) {
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(
+                        roleRepository.findById(id).orElseThrow(
+                                () -> new ServiceException(
+                                        applicationProperties.getCode("not-found-code"),
+                                        applicationProperties.getProperty("not-found-text"),
+                                        HttpStatus.NOT_FOUND
+                                )
+                        )
                 )
-        ));
+                .build();
     }
 
     public BaseDTO deleteRole(Integer id) {
@@ -77,19 +84,27 @@ public class RoleService {
         );
         role.setIsDeleted(true);
         roleRepository.save(role);
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
 
     }
 
-    public BaseDTO<List<Role>> getAllRoles() {
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), roleRepository.findAll());
+    public BaseDTO getAllRoles() {
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(roleRepository.findAll())
+                .build();
     }
 
-    public BaseDTO<PagerDTO<Role>> getRoles(Integer page) {
+    public BaseDTO getRoles(Integer page) {
         Pageable pageable = ApplicationUtilities.getInstance().pageable(page, applicationProperties);
         Page<Role> companies = roleRepository.findAll(pageable);
         PagerDTO<Role> companyPagerDTO = new PagerDTO<>(companies);
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), companyPagerDTO);
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(companyPagerDTO)
+                .build();
     }
 
 }

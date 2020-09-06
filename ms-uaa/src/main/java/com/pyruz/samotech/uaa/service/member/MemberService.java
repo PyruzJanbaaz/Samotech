@@ -20,9 +20,7 @@ import org.springframework.stereotype.Service;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Timestamp;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -66,7 +64,9 @@ public class MemberService {
                         .roles(roleRepository.findRoleByIdIn(newMember.getRoles()))
                         .build()
         );
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
 
     }
 
@@ -94,18 +94,24 @@ public class MemberService {
         member.setEmail(updateMember.getEmail());
         member.setPostalCode(updateMember.getPostalCode());
         memberRepository.save(member);
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
 
     }
 
-    public BaseDTO<Member> getMember(Integer id) {
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), memberRepository.findById(id).orElseThrow(
-                () -> new ServiceException(
-                        applicationProperties.getCode("not-found-code"),
-                        applicationProperties.getProperty("not-found-text"),
-                        HttpStatus.NOT_FOUND
-                )
-        ));
+    public BaseDTO getMember(Integer id) {
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(
+                        memberRepository.findById(id).orElseThrow(
+                                () -> new ServiceException(
+                                        applicationProperties.getCode("not-found-code"),
+                                        applicationProperties.getProperty("not-found-text"),
+                                        HttpStatus.NOT_FOUND
+                                )))
+                .build();
+
     }
 
     public BaseDTO deleteMember(Integer id) {
@@ -118,19 +124,27 @@ public class MemberService {
         );
         member.setIsDeleted(true);
         memberRepository.save(member);
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
 
     }
 
-    public BaseDTO<PagerDTO<Member>> getMembers(Integer page) {
+    public BaseDTO getMembers(Integer page) {
         Pageable pageable = ApplicationUtilities.getInstance().pageable(page, applicationProperties);
         Page<Member> members = memberRepository.findAll(pageable);
         PagerDTO<Member> memberPagerDTO = new PagerDTO<>(members);
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), memberPagerDTO);
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(memberPagerDTO)
+                .build();
     }
 
-    public BaseDTO<List<Member>> getAllMembers() {
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), memberRepository.findAll());
+    public BaseDTO getAllMembers() {
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(memberRepository.findAll())
+                .build();
     }
 
     private static String md5Password(String plainPassword) throws NoSuchAlgorithmException {

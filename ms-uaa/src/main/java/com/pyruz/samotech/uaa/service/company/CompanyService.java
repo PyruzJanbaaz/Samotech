@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.UUID;
 
 
@@ -45,7 +44,9 @@ public class CompanyService {
                 .companyCode(UUID.randomUUID().toString())
                 .build()
         );
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
     }
 
     public BaseDTO editCompany(UpdateCompany updateCompany) {
@@ -68,17 +69,23 @@ public class CompanyService {
         company.setUpdateDate(new Timestamp(System.currentTimeMillis()));
         company.setIsActive(updateCompany.getIsActive());
         companyRepository.save(company);
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
     }
 
-    public BaseDTO<Company> getCompany(Integer id) {
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), companyRepository.findById(id).orElseThrow(
-                () -> new ServiceException(
-                        applicationProperties.getCode("not-found-code"),
-                        applicationProperties.getProperty("not-found-text"),
-                        HttpStatus.NOT_FOUND
-                )
-        ));
+    public BaseDTO getCompany(Integer id) {
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(
+                        companyRepository.findById(id).orElseThrow(
+                                () -> new ServiceException(
+                                        applicationProperties.getCode("not-found-code"),
+                                        applicationProperties.getProperty("not-found-text"),
+                                        HttpStatus.NOT_FOUND
+                                )))
+                .build();
+
     }
 
     public BaseDTO deleteCompany(Integer id) {
@@ -91,19 +98,27 @@ public class CompanyService {
         );
         company.setIsDeleted(true);
         companyRepository.save(company);
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
     }
 
 
-    public BaseDTO<List<Company>> getAllCompanies() {
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), companyRepository.findAll());
+    public BaseDTO getAllCompanies() {
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(companyRepository.findAll())
+                .build();
     }
 
-    public BaseDTO<PagerDTO<Company>> getCompanies(Integer page) {
+    public BaseDTO getCompanies(Integer page) {
         Pageable pageable = ApplicationUtilities.getInstance().pageable(page, applicationProperties);
         Page<Company> companies = companyRepository.findAll(pageable);
         PagerDTO<Company> companyPagerDTO = new PagerDTO<>(companies);
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), companyPagerDTO);
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(companyPagerDTO)
+                .build();
     }
 
 

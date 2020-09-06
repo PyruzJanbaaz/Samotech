@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.security.NoSuchAlgorithmException;
 
 @RestController
 @RequestMapping("/api")
@@ -24,7 +23,7 @@ public class MemberController {
     @SneakyThrows
     @PostMapping("/v1/member")
     @ResponseStatus(HttpStatus.CREATED)
-    public BaseDTO addMember(@Valid @RequestBody NewMember newMember)  {
+    public BaseDTO addMember(@Valid @RequestBody NewMember newMember) {
         return memberService.addMember(newMember);
     }
 
