@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -37,7 +38,7 @@ public class RoleService {
                         .roleCode(UUID.randomUUID().toString())
                         .build()
         );
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties));
+        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
     }
 
     public BaseDTO editRole(UpdateRole updateRole) {
@@ -52,11 +53,12 @@ public class RoleService {
         role.setCaption(updateRole.getCaption());
         role.setIsActive(updateRole.getIsActive());
         roleRepository.save(role);
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties));
+        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+
     }
 
-    public BaseDTO getRole(Integer id) {
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties), roleRepository.findById(id).orElseThrow(
+    public BaseDTO<Role> getRole(Integer id) {
+        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), roleRepository.findById(id).orElseThrow(
                 () -> new ServiceException(
                         applicationProperties.getCode("not-found-code"),
                         applicationProperties.getProperty("not-found-text"),
@@ -75,18 +77,19 @@ public class RoleService {
         );
         role.setIsDeleted(true);
         roleRepository.save(role);
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties));
+        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+
     }
 
-    public BaseDTO getAllRoles() {
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties), roleRepository.findAll());
+    public BaseDTO<List<Role>> getAllRoles() {
+        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), roleRepository.findAll());
     }
 
-    public BaseDTO getRoles(Integer page) {
+    public BaseDTO<PagerDTO<Role>> getRoles(Integer page) {
         Pageable pageable = ApplicationUtilities.getInstance().pageable(page, applicationProperties);
         Page<Role> companies = roleRepository.findAll(pageable);
         PagerDTO<Role> companyPagerDTO = new PagerDTO<>(companies);
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties), companyPagerDTO);
+        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), companyPagerDTO);
     }
 
 }

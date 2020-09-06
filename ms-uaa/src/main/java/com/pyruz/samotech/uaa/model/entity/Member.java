@@ -8,7 +8,7 @@ import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -16,7 +16,7 @@ import java.util.List;
 @Builder
 @Table(name = "member",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"email","username"})
+                @UniqueConstraint(columnNames = {"email", "username"})
         }
 )
 @Where(clause = "is_deleted = false")
@@ -41,7 +41,7 @@ public class Member extends BaseEntity<Integer> {
     @Column(name = "address", length = 250)
     private String address;
     @Column(name = "birthday")
-    private Timestamp birthday;
+    private Date birthday;
     @Column(name = "national_code", length = 10, nullable = false)
     private String nationalCode;
     @Column(name = "postal_code", length = 10, nullable = false)

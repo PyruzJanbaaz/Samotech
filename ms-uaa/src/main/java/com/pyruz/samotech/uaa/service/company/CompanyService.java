@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -44,7 +45,7 @@ public class CompanyService {
                 .companyCode(UUID.randomUUID().toString())
                 .build()
         );
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties));
+        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
     }
 
     public BaseDTO editCompany(UpdateCompany updateCompany) {
@@ -67,11 +68,11 @@ public class CompanyService {
         company.setUpdateDate(new Timestamp(System.currentTimeMillis()));
         company.setIsActive(updateCompany.getIsActive());
         companyRepository.save(company);
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties));
+        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
     }
 
-    public BaseDTO getCompany(Integer id) {
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties), companyRepository.findById(id).orElseThrow(
+    public BaseDTO<Company> getCompany(Integer id) {
+        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), companyRepository.findById(id).orElseThrow(
                 () -> new ServiceException(
                         applicationProperties.getCode("not-found-code"),
                         applicationProperties.getProperty("not-found-text"),
@@ -90,19 +91,19 @@ public class CompanyService {
         );
         company.setIsDeleted(true);
         companyRepository.save(company);
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties));
+        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
     }
 
 
-    public BaseDTO getAllCompanies() {
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties), companyRepository.findAll());
+    public BaseDTO<List<Company>> getAllCompanies() {
+        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), companyRepository.findAll());
     }
 
-    public BaseDTO getCompanies(Integer page) {
+    public BaseDTO<PagerDTO<Company>> getCompanies(Integer page) {
         Pageable pageable = ApplicationUtilities.getInstance().pageable(page, applicationProperties);
         Page<Company> companies = companyRepository.findAll(pageable);
         PagerDTO<Company> companyPagerDTO = new PagerDTO<>(companies);
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties), companyPagerDTO);
+        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), companyPagerDTO);
     }
 
 

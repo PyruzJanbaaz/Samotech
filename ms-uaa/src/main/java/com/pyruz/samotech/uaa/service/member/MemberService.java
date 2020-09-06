@@ -22,6 +22,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -40,18 +41,18 @@ public class MemberService {
         this.applicationProperties = applicationProperties;
     }
 
-    public BaseDTO addMember(NewMember newMember) {
+    public BaseDTO addMember(NewMember newMember) throws NoSuchAlgorithmException {
         memberRepository.save(
                 Member.builder()
                         .firstName(newMember.getFirstName())
                         .lastName(newMember.getLastName())
                         .address(newMember.getAddress())
                         .avatar(newMember.getAvatar())
-                        .birthday((Timestamp) new Date())
+                        .birthday(new Date())
                         .email(newMember.getEmail())
                         .nationalCode(newMember.getNationalCode())
                         .username(newMember.getUsername())
-                        .password(MD5Password(newMember.getPassword()))
+                        .password(md5Password(newMember.getPassword()))
                         .postalCode(newMember.getPostalCode())
                         .memberCode(UUID.randomUUID().toString())
                         .company(
@@ -65,7 +66,8 @@ public class MemberService {
                         .roles(roleRepository.findRoleByIdIn(newMember.getRoles()))
                         .build()
         );
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties));
+        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+
     }
 
     public BaseDTO editMember(UpdateMember updateMember) {
@@ -80,7 +82,7 @@ public class MemberService {
         member.setLastName(updateMember.getLastName());
         member.setAddress(updateMember.getAddress());
         member.setAvatar(updateMember.getAvatar());
-        member.setBirthday((Timestamp) new Date());
+        member.setBirthday(new Date());
         member.setCompany(companyRepository.findById(updateMember.getCompanyId()).orElseThrow(
                 () -> new ServiceException(
                         applicationProperties.getCode("not-found-code"),
@@ -92,11 +94,12 @@ public class MemberService {
         member.setEmail(updateMember.getEmail());
         member.setPostalCode(updateMember.getPostalCode());
         memberRepository.save(member);
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties));
+        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+
     }
 
-    public BaseDTO getMember(Integer id) {
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties), memberRepository.findById(id).orElseThrow(
+    public BaseDTO<Member> getMember(Integer id) {
+        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), memberRepository.findById(id).orElseThrow(
                 () -> new ServiceException(
                         applicationProperties.getCode("not-found-code"),
                         applicationProperties.getProperty("not-found-text"),
@@ -115,32 +118,28 @@ public class MemberService {
         );
         member.setIsDeleted(true);
         memberRepository.save(member);
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties));
+        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+
     }
 
-    public BaseDTO getMembers(Integer page) {
+    public BaseDTO<PagerDTO<Member>> getMembers(Integer page) {
         Pageable pageable = ApplicationUtilities.getInstance().pageable(page, applicationProperties);
         Page<Member> members = memberRepository.findAll(pageable);
         PagerDTO<Member> memberPagerDTO = new PagerDTO<>(members);
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties), memberPagerDTO);
+        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), memberPagerDTO);
     }
 
-    public BaseDTO getAllMembers() {
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties), memberRepository.findAll());
+    public BaseDTO<List<Member>> getAllMembers() {
+        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), memberRepository.findAll());
     }
 
-    private static String MD5Password(String plainPassword) {
-        try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
-            byte[] hashInBytes = md.digest(plainPassword.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hashedPassword = new StringBuilder();
-            for (byte b : hashInBytes) {
-                hashedPassword.append(String.format("%02x", b));
-            }
-            return hashedPassword.toString();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
+    private static String md5Password(String plainPassword) throws NoSuchAlgorithmException {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        byte[] hashInBytes = md.digest(plainPassword.getBytes(StandardCharsets.UTF_8));
+        StringBuilder hashedPassword = new StringBuilder();
+        for (byte b : hashInBytes) {
+            hashedPassword.append(String.format("%02x", b));
         }
-        throw new ServiceException();
+        return hashedPassword.toString();
     }
 }

@@ -20,6 +20,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 
 
 @ControllerAdvice
@@ -48,7 +49,6 @@ public class ServiceExceptionHandler {
                     )
             );
             baseDTO.setMeta(metaDTO);
-            break;
         }
         return new ResponseEntity<>(baseDTO, HttpStatus.BAD_REQUEST);
     }
@@ -58,13 +58,15 @@ public class ServiceExceptionHandler {
     public final ResponseEntity<BaseDTO> handleAllExceptions(ServiceException ex, WebRequest request) {
         logger.error(ex.getMessage());
         return new ResponseEntity<>(
-                new BaseDTO(
-                        new MetaDTO(
-                                ex.getCode(),
-                                ex.getMessage()
+                BaseDTO.builder()
+                        .meta(
+                                MetaDTO.builder()
+                                        .code(ex.getCode())
+                                        .message(ex.getMessage())
+                                        .build()
                         )
-                ), ex.getHttpStatus() == null ? HttpStatus.INTERNAL_SERVER_ERROR : ex.getHttpStatus()
-        );
+                        .build()
+                , ex.getHttpStatus() == null ? HttpStatus.INTERNAL_SERVER_ERROR : ex.getHttpStatus());
     }
 
     // --> Handler not found exceptions
@@ -72,18 +74,21 @@ public class ServiceExceptionHandler {
     public final ResponseEntity<BaseDTO> handleAllExceptions(NoHandlerFoundException ex, WebRequest request) {
         logger.error(ex.getMessage());
         return new ResponseEntity<>(
-                new BaseDTO(
-                        new MetaDTO(
-                                HttpStatus.NOT_FOUND.value(),
-                                ex.getMessage()
+                BaseDTO.builder()
+                        .meta(
+                                MetaDTO.builder()
+                                        .code(HttpStatus.NOT_FOUND.value())
+                                        .message(ex.getMessage())
+                                        .build()
                         )
-                ), HttpStatus.NOT_FOUND
+                        .build()
+                , HttpStatus.NOT_FOUND
         );
     }
 
     // --> General exceptions
     @ExceptionHandler(Exception.class)
-    public final ResponseEntity<BaseDTO> handleAllExceptions(Exception ex, WebRequest request) throws Exception {
+    public final ResponseEntity<BaseDTO> handleAllExceptions(Exception ex) throws IOException {
         logger.error(ex.getMessage());
         return new ResponseEntity<>(
                 new ObjectMapper().readValue((((HttpServerErrorException) ex).getResponseBodyAsString()), BaseDTO.class), ((HttpServerErrorException) ex).getStatusCode()
@@ -95,29 +100,38 @@ public class ServiceExceptionHandler {
     public final ResponseEntity<BaseDTO> handleMissingParameterException(MissingServletRequestParameterException ex, WebRequest request) {
         logger.error(ex.getMessage());
         Object convertedFieldName = applicationProperties.getProperty(ex.getParameterName());
-        return new ResponseEntity<BaseDTO>(
-                new BaseDTO(new MetaDTO(
-                        applicationProperties.getCode("missing-parameter-code"),
-                        String.format(
-                                applicationProperties.getProperty("missing-parameter-text"),
-                                convertedFieldName == null ? ex.getParameterName() : convertedFieldName.toString()
+        return new ResponseEntity<>(
+                BaseDTO.builder()
+                        .meta(
+                                MetaDTO.builder()
+                                        .code(applicationProperties.getCode("missing-parameter-code"))
+                                        .message(
+                                                String.format(
+                                                        applicationProperties.getProperty("missing-parameter-text"),
+                                                        convertedFieldName == null ? ex.getParameterName() : convertedFieldName.toString()
+                                                )
+                                        )
+                                        .build()
                         )
-                ))
+                        .build()
                 , HttpStatus.BAD_REQUEST
         );
     }
 
     // --> Runtime exceptions
     @ExceptionHandler(RuntimeException.class)
-    public final ResponseEntity<BaseDTO> handleAllExceptions(RuntimeException ex, WebRequest request) throws Exception {
+    public final ResponseEntity<BaseDTO> handleAllExceptions(RuntimeException ex) {
         logger.error(ex.getMessage());
         return new ResponseEntity<>(
-                new BaseDTO(
-                        new MetaDTO(
-                                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                                applicationProperties.getProperty("unknown-error-text")
+                BaseDTO.builder()
+                        .meta(
+                                MetaDTO.builder()
+                                        .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                                        .message(applicationProperties.getProperty("unknown-error-text"))
+                                        .build()
                         )
-                ), HttpStatus.INTERNAL_SERVER_ERROR
+                        .build()
+                , HttpStatus.INTERNAL_SERVER_ERROR
         );
     }
 
@@ -126,18 +140,20 @@ public class ServiceExceptionHandler {
     public final ResponseEntity<BaseDTO> handleAllExceptions(Error ex, WebRequest request) {
         logger.error(ex.getMessage());
         return new ResponseEntity<>(
-                new BaseDTO(
-                        new MetaDTO(
-                                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                                ex.getMessage()
+                BaseDTO.builder()
+                        .meta(
+                                MetaDTO.builder()
+                                        .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                                        .message(ex.getMessage())
+                                        .build()
                         )
-                ), HttpStatus.INTERNAL_SERVER_ERROR
+                        .build(), HttpStatus.INTERNAL_SERVER_ERROR
         );
     }
 
     // --> Server or machine errors
     @ExceptionHandler(HttpClientErrorException.class)
-    public final ResponseEntity<BaseDTO> handleHttpClientErrorException(HttpClientErrorException ex, WebRequest request) throws Exception {
+    public final ResponseEntity<BaseDTO> handleHttpClientErrorException(HttpClientErrorException ex, WebRequest request) throws IOException {
         logger.error(ex.getMessage());
         return new ResponseEntity<>(
                 new ObjectMapper().readValue(ex.getStatusText(), BaseDTO.class), ex.getStatusCode()

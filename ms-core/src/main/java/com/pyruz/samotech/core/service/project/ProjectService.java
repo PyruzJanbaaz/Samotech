@@ -17,6 +17,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ProjectService {
 
@@ -46,7 +48,7 @@ public class ProjectService {
         );
         project.setCollection(collection);
         projectRepository.save(project);
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties));
+        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
     }
 
 
@@ -64,12 +66,12 @@ public class ProjectService {
         project.setBackgroundImage(updateProject.getBackgroundImage());
         //project.setEpics(epicRepository.findEpicByIdIn(updateProject.getEpics()));
         projectRepository.save(project);
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties));
+        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
     }
 
 
-    public BaseDTO getProject(Integer id) {
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties), projectRepository.findById(id).orElseThrow(
+    public BaseDTO<Project> getProject(Integer id) {
+        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), projectRepository.findById(id).orElseThrow(
                 () -> new ServiceException(
                         applicationProperties.getCode("not-found-code"),
                         applicationProperties.getProperty("not-found-text"),
@@ -79,8 +81,8 @@ public class ProjectService {
     }
 
 
-    public BaseDTO getProjectByCollectionId(Integer collectionId) {
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties), projectRepository.findProjectByCollectionId(collectionId));
+    public BaseDTO<List<Project>> getProjectByCollectionId(Integer collectionId) {
+        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), projectRepository.findProjectByCollectionId(collectionId));
     }
 
 
@@ -94,19 +96,19 @@ public class ProjectService {
         );
         project.setIsDeleted(true);
         projectRepository.save(project);
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties));
+        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
     }
 
 
-    public BaseDTO getAllProjects() {
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties), projectRepository.findAll());
+    public BaseDTO<java.util.List<Project>> getAllProjects() {
+        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), projectRepository.findAll());
     }
 
 
-    public BaseDTO getProjects(Integer page) {
+    public BaseDTO<PagerDTO<Project>> getProjects(Integer page) {
         Pageable pageable = ApplicationUtilities.getInstance().pageable(page, applicationProperties);
         Page<Project> projects = projectRepository.findAll(pageable);
         PagerDTO<Project> projectPagerDTO = new PagerDTO<>(projects);
-        return new BaseDTO(MetaDTO.getInstance(applicationProperties), projectPagerDTO);
+        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), projectPagerDTO);
     }
 }
