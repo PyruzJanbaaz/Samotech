@@ -3,6 +3,7 @@ package com.pyruz.samotech.core.service.project;
 import com.pyruz.samotech.core.model.entity.Collections;
 import com.pyruz.samotech.core.model.entity.Project;
 import com.pyruz.samotech.core.repository.CollectionsRepository;
+import com.pyruz.samotech.core.repository.EpicRepository;
 import com.pyruz.samotech.core.repository.ProjectRepository;
 import com.pyruz.samotech.shared.handler.exception.ServiceException;
 import com.pyruz.samotech.shared.model.domain.project.NewProject;
@@ -17,19 +18,19 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class ProjectService {
 
     final ApplicationProperties applicationProperties;
     final ProjectRepository projectRepository;
     final CollectionsRepository collectionsRepository;
+    final EpicRepository epicRepository;
 
-    public ProjectService(ApplicationProperties applicationProperties, ProjectRepository projectRepository, CollectionsRepository collectionsRepository) {
+    public ProjectService(ApplicationProperties applicationProperties, ProjectRepository projectRepository, CollectionsRepository collectionsRepository, EpicRepository epicRepository) {
         this.applicationProperties = applicationProperties;
         this.projectRepository = projectRepository;
         this.collectionsRepository = collectionsRepository;
+        this.epicRepository = epicRepository;
     }
 
     public BaseDTO addProject(NewProject newProject) {
@@ -48,7 +49,9 @@ public class ProjectService {
         );
         project.setCollection(collection);
         projectRepository.save(project);
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
     }
 
 
@@ -64,25 +67,35 @@ public class ProjectService {
         project.setCaption(updateProject.getCaption());
         project.setBackgroundColor(updateProject.getBackgroundColor());
         project.setBackgroundImage(updateProject.getBackgroundImage());
-        //project.setEpics(epicRepository.findEpicByIdIn(updateProject.getEpics()));
+        project.setEpics(epicRepository.findEpicByIdIn(updateProject.getEpics()));
         projectRepository.save(project);
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
     }
 
 
-    public BaseDTO<Project> getProject(Integer id) {
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), projectRepository.findById(id).orElseThrow(
-                () -> new ServiceException(
-                        applicationProperties.getCode("not-found-code"),
-                        applicationProperties.getProperty("not-found-text"),
-                        HttpStatus.NOT_FOUND
+    public BaseDTO getProject(Integer id) {
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(
+                        projectRepository.findById(id).orElseThrow(
+                                () -> new ServiceException(
+                                        applicationProperties.getCode("not-found-code"),
+                                        applicationProperties.getProperty("not-found-text"),
+                                        HttpStatus.NOT_FOUND
+                                )
+                        )
                 )
-        ));
+                .build();
     }
 
 
-    public BaseDTO<List<Project>> getProjectByCollectionId(Integer collectionId) {
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), projectRepository.findProjectByCollectionId(collectionId));
+    public BaseDTO getProjectByCollectionId(Integer collectionId) {
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(projectRepository.findProjectByCollectionId(collectionId))
+                .build();
     }
 
 
@@ -96,19 +109,28 @@ public class ProjectService {
         );
         project.setIsDeleted(true);
         projectRepository.save(project);
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
     }
 
 
-    public BaseDTO<java.util.List<Project>> getAllProjects() {
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), projectRepository.findAll());
+    public BaseDTO getAllProjects() {
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(projectRepository.findAll())
+                .build();
+
     }
 
 
-    public BaseDTO<PagerDTO<Project>> getProjects(Integer page) {
+    public BaseDTO getProjects(Integer page) {
         Pageable pageable = ApplicationUtilities.getInstance().pageable(page, applicationProperties);
         Page<Project> projects = projectRepository.findAll(pageable);
         PagerDTO<Project> projectPagerDTO = new PagerDTO<>(projects);
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), projectPagerDTO);
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(projectPagerDTO)
+                .build();
     }
 }

@@ -2,6 +2,7 @@ package com.pyruz.samotech.core.service.collections;
 
 import com.pyruz.samotech.core.model.entity.Collections;
 import com.pyruz.samotech.core.repository.CollectionsRepository;
+import com.pyruz.samotech.core.repository.ProjectRepository;
 import com.pyruz.samotech.shared.handler.exception.ServiceException;
 import com.pyruz.samotech.shared.model.domain.collection.NewCollection;
 import com.pyruz.samotech.shared.model.domain.collection.UpdateCollection;
@@ -15,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -23,10 +23,12 @@ public class CollectionsService {
 
     final CollectionsRepository collectionsRepository;
     final ApplicationProperties applicationProperties;
+    final ProjectRepository projectRepository;
 
-    public CollectionsService(CollectionsRepository collectionsRepository, ApplicationProperties applicationProperties) {
+    public CollectionsService(CollectionsRepository collectionsRepository, ApplicationProperties applicationProperties, ProjectRepository projectRepository) {
         this.collectionsRepository = collectionsRepository;
         this.applicationProperties = applicationProperties;
+        this.projectRepository = projectRepository;
     }
 
     public BaseDTO<String> addCollection(NewCollection newCollection) {
@@ -49,19 +51,28 @@ public class CollectionsService {
         );
         collection.setCaption(updateCollection.getCaption());
         collection.setTitle(updateCollection.getTitle());
-        //collection.setProjects(projectRepository.findProjectByIdIn(updateCollection.getProjects()));
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        collection.setProjects(projectRepository.findProjectByIdIn(updateCollection.getProjects()));
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
     }
 
 
-    public BaseDTO<Collections> getCollection(Integer id) {
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), collectionsRepository.findById(id).orElseThrow(
-                () -> new ServiceException(
-                        applicationProperties.getCode("not-found-code"),
-                        applicationProperties.getProperty("not-found-text"),
-                        HttpStatus.NOT_FOUND
-                )
-        ));
+    public BaseDTO getCollection(Integer id) {
+
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(
+                        collectionsRepository.findById(id).orElseThrow(
+                                () -> new ServiceException(
+                                        applicationProperties.getCode("not-found-code"),
+                                        applicationProperties.getProperty("not-found-text"),
+                                        HttpStatus.NOT_FOUND
+                                )
+                        )
+                ).build();
+
+
     }
 
 
@@ -76,19 +87,27 @@ public class CollectionsService {
         );
         collection.setIsDeleted(true);
         collectionsRepository.save(collection);
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
     }
 
 
-    public BaseDTO<List<Collections>> getAllCollections() {
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), collectionsRepository.findAll());
+    public BaseDTO getAllCollections() {
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(collectionsRepository.findAll())
+                .build();
     }
 
 
-    public BaseDTO<PagerDTO<Collections>> getCollections(Integer page) {
+    public BaseDTO getCollections(Integer page) {
         Pageable pageable = ApplicationUtilities.getInstance().pageable(page, applicationProperties);
         Page<Collections> collections = collectionsRepository.findAll(pageable);
         PagerDTO<Collections> collectionPagerDTO = new PagerDTO<>(collections);
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), collectionPagerDTO);
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(collectionPagerDTO)
+                .build();
     }
 }

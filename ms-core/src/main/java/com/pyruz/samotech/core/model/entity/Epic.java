@@ -25,17 +25,13 @@ public class Epic extends BaseEntity<Integer> {
     @Size(max = 50)
     private String epicCode;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "epic_project",
-            joinColumns = {@JoinColumn(name = "epic_id")},
-            inverseJoinColumns = {@JoinColumn(name = "project_id")}
-    )
-    private Project project;
-
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "state_id", updatable = false, insertable = false)
     private States states;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "project_id")
+    private Project project;
 
 
 }

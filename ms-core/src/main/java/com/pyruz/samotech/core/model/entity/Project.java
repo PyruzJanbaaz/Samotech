@@ -7,6 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @Entity
@@ -36,10 +37,9 @@ public class Project extends BaseEntity<Integer> implements Serializable {
     private String backgroundColor;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "project_collection",
-            joinColumns = {@JoinColumn(name = "project_id")},
-            inverseJoinColumns = {@JoinColumn(name = "collection_id")}
-    )
+    @JoinColumn(name = "collection_id")
     private Collections collection;
+
+    @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Epic> epics;
 }

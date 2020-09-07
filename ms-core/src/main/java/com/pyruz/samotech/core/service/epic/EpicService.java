@@ -17,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -36,7 +35,7 @@ public class EpicService {
     }
 
 
-    public BaseDTO<String> addEpic(NewEpic newEpic) {
+    public BaseDTO addEpic(NewEpic newEpic) {
         Epic epic = new Epic();
         epic.setTitle(newEpic.getTitle());
         epic.setProject(projectRepository.findById(newEpic.getProjectId()).orElseThrow(
@@ -55,7 +54,10 @@ public class EpicService {
         ));
         epic.setEpicCode(UUID.randomUUID().toString());
         epicRepository.save(epic);
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), epic.getEpicCode());
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(epic.getEpicCode())
+                .build();
     }
 
 
@@ -76,19 +78,24 @@ public class EpicService {
                 )
         ));
         epicRepository.save(epic);
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
     }
 
 
-    public BaseDTO<Epic> getEpic(Integer id) {
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), epicRepository.findById(id).orElseThrow(
-                () -> new ServiceException(
-                        applicationProperties.getCode("not-found-code"),
-                        applicationProperties.getProperty("not-found-text"),
-                        HttpStatus.NOT_FOUND
-                )
-        ));
-
+    public BaseDTO getEpic(Integer id) {
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(
+                        epicRepository.findById(id).orElseThrow(
+                                () -> new ServiceException(
+                                        applicationProperties.getCode("not-found-code"),
+                                        applicationProperties.getProperty("not-found-text"),
+                                        HttpStatus.NOT_FOUND
+                                )
+                        )
+                ).build();
     }
 
 
@@ -102,19 +109,27 @@ public class EpicService {
         );
         epic.setIsDeleted(true);
         epicRepository.save(epic);
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
     }
 
 
-    public BaseDTO<List<Epic>> getAllEpics() {
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), epicRepository.findAll());
+    public BaseDTO getAllEpics() {
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(epicRepository.findAll())
+                .build();
     }
 
 
-    public BaseDTO<PagerDTO<Epic>> getEpics(Integer page) {
+    public BaseDTO getEpics(Integer page) {
         Pageable pageable = ApplicationUtilities.getInstance().pageable(page, applicationProperties);
         Page<Epic> epics = epicRepository.findAll(pageable);
         PagerDTO<Epic> epicPagerDTO = new PagerDTO<>(epics);
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), epicPagerDTO);
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(epicPagerDTO)
+                .build();
     }
 }

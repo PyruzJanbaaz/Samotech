@@ -16,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -44,7 +43,9 @@ public class FeatureService {
         ));
         feature.setFeatureCode(UUID.randomUUID().toString());
         featureRepository.save(feature);
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
     }
 
 
@@ -65,18 +66,24 @@ public class FeatureService {
                 )
         ));
         featureRepository.save(feature);
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
     }
 
 
-    public BaseDTO<Feature> getFeature(Integer id) {
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), featureRepository.findById(id).orElseThrow(
-                () -> new ServiceException(
-                        applicationProperties.getCode("not-found-code"),
-                        applicationProperties.getProperty("not-found-text"),
-                        HttpStatus.NOT_FOUND
-                )
-        ));
+    public BaseDTO getFeature(Integer id) {
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(
+                        featureRepository.findById(id).orElseThrow(
+                                () -> new ServiceException(
+                                        applicationProperties.getCode("not-found-code"),
+                                        applicationProperties.getProperty("not-found-text"),
+                                        HttpStatus.NOT_FOUND
+                                )
+                        )
+                ).build();
 
     }
 
@@ -91,19 +98,27 @@ public class FeatureService {
         );
         feature.setIsDeleted(true);
         featureRepository.save(feature);
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
     }
 
 
-    public BaseDTO<List<Feature>> getAllFeatures() {
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), featureRepository.findAll());
+    public BaseDTO getAllFeatures() {
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(featureRepository.findAll())
+                .build();
     }
 
 
-    public BaseDTO<PagerDTO<Feature>> getFeatures(Integer page) {
+    public BaseDTO getFeatures(Integer page) {
         Pageable pageable = ApplicationUtilities.getInstance().pageable(page, applicationProperties);
         Page<Feature> features = featureRepository.findAll(pageable);
         PagerDTO<Feature> featurePagerDTO = new PagerDTO<>(features);
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), featurePagerDTO);
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(featurePagerDTO)
+                .build();
     }
 }

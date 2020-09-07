@@ -16,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -45,7 +44,9 @@ public class TaskService {
         ));
         task.setTaskCode(UUID.randomUUID().toString());
         taskRepository.save(task);
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
     }
 
 
@@ -66,18 +67,24 @@ public class TaskService {
                 )
         ));
         taskRepository.save(task);
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
     }
 
 
-    public BaseDTO<Task> getTask(Integer id) {
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), taskRepository.findById(id).orElseThrow(
-                () -> new ServiceException(
-                        applicationProperties.getCode("not-found-code"),
-                        applicationProperties.getProperty("not-found-text"),
-                        HttpStatus.NOT_FOUND
-                )
-        ));
+    public BaseDTO getTask(Integer id) {
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(
+                        taskRepository.findById(id).orElseThrow(
+                                () -> new ServiceException(
+                                        applicationProperties.getCode("not-found-code"),
+                                        applicationProperties.getProperty("not-found-text"),
+                                        HttpStatus.NOT_FOUND
+                                )
+                        )
+                ).build();
 
     }
 
@@ -92,19 +99,28 @@ public class TaskService {
         );
         task.setIsDeleted(true);
         taskRepository.save(task);
-        return BaseDTO.builder().meta(MetaDTO.getInstance(applicationProperties)).build();
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .build();
     }
 
 
-    public BaseDTO<List<Task>> getAllTasks() {
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), taskRepository.findAll());
+    public BaseDTO getAllTasks() {
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(taskRepository.findAll())
+                .build();
     }
 
 
-    public BaseDTO<PagerDTO<Task>> getTasks(Integer page) {
+    public BaseDTO getTasks(Integer page) {
         Pageable pageable = ApplicationUtilities.getInstance().pageable(page, applicationProperties);
         Page<Task> tasks = taskRepository.findAll(pageable);
         PagerDTO<Task> taskPagerDTO = new PagerDTO<>(tasks);
-        return new BaseDTO<>(MetaDTO.getInstance(applicationProperties), taskPagerDTO);
+        return BaseDTO.builder()
+                .meta(MetaDTO.getInstance(applicationProperties))
+                .data(taskPagerDTO)
+                .build();
+
     }
 }

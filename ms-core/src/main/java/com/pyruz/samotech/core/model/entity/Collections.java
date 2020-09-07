@@ -3,11 +3,9 @@ package com.pyruz.samotech.core.model.entity;
 import lombok.Data;
 import org.hibernate.annotations.Where;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @Entity
@@ -18,9 +16,14 @@ public class Collections extends BaseEntity<Integer> implements Serializable {
 
     @Column(name = "title", length = 50, nullable = false)
     private String title;
+
     @Column(name = "collection_code", length = 50, nullable = false)
     private String collectionCode;
+
     @Column(name = "caption", length = 50, nullable = false)
     private String caption;
+
+    @OneToMany(mappedBy = "collection", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Project> projects;
 
 }
