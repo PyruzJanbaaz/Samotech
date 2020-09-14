@@ -1,6 +1,7 @@
 package com.pyruz.samotech.core.model.entity;
 
 import lombok.Data;
+import lombok.ToString;
 import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
@@ -23,6 +24,7 @@ public class Collections extends BaseEntity<Integer> implements Serializable {
     @Column(name = "caption", length = 50, nullable = false)
     private String caption;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "collection", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Project> projects;
 

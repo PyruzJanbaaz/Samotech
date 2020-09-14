@@ -40,6 +40,7 @@ public class Project extends BaseEntity<Integer> implements Serializable {
     @JoinColumn(name = "collection_id")
     private Collections collection;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "project", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Epic> epics;
 }
